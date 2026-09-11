@@ -7,6 +7,7 @@ import java.time.LocalDateTime;
 
 import jakarta.persistence.*;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.Email;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -38,6 +39,7 @@ public class Patients {
 	    private String phoneNo;
 
 	    @Column(unique = true, length = 150)
+	    @Email
 	    private String email;
 
 	    @OneToOne(
