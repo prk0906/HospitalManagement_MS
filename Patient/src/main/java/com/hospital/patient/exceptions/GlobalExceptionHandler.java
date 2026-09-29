@@ -1,5 +1,8 @@
 package com.hospital.patient.exceptions;
 
+import com.hospital.patient.dto.ErrorResponse;
+import org.springdoc.api.ErrorMessage;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -29,5 +32,11 @@ public class GlobalExceptionHandler {
         return ResponseEntity
                 .badRequest()
                 .body(errors);
+    }
+
+    @ExceptionHandler(PatientIDNotFoundError.class)
+    public ResponseEntity<ErrorResponse> patientIdNotFound(PatientIDNotFoundError ex){
+        ErrorResponse error = new ErrorResponse(HttpStatus.NOT_FOUND.value(),ex.getMessage());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
     }
 }
