@@ -3,6 +3,7 @@ package com.hospital.patient.controller;
 import com.hospital.patient.dto.PageResponse;
 import com.hospital.patient.dto.PatientCreateDTO;
 import com.hospital.patient.dto.PatientResponseDTO;
+import com.hospital.patient.dto.PatientUpdateDTO;
 import com.hospital.patient.exceptions.PatientIDNotFoundError;
 import com.hospital.patient.service.PatientService;
 import jakarta.validation.Valid;
@@ -50,7 +51,7 @@ public class PatientController {
         return ResponseEntity.ok(response);
     }
     @PutMapping("{id}")
-    public  ResponseEntity<PatientResponseDTO> updatePatient(@PathVariable(name = "id") Long Id,@RequestBody PatientCreateDTO req){
+    public  ResponseEntity<PatientResponseDTO> updatePatient(@PathVariable(name = "id") Long Id,@RequestBody PatientUpdateDTO req) throws PatientIDNotFoundError {
         PatientResponseDTO response = _patientService.updatePatient(Id, req);
         return ResponseEntity.ok(response);
     }

@@ -2,6 +2,7 @@ package com.hospital.patient.builders;
 
 import com.hospital.patient.dto.PatientCreateDTO;
 import com.hospital.patient.dto.PatientResponseDTO;
+import com.hospital.patient.dto.PatientUpdateDTO;
 import com.hospital.patient.models.Patients;
 
 import java.time.LocalDate;
@@ -37,5 +38,16 @@ public class PatientBuilder {
                 .country(req.getAddress().getCountry())
                 .zipCode(req.getAddress().getZipCode())
                 .build();
+    }
+
+    public static Patients createPatientsFromPatientUpdateDTO(Patients patient, PatientUpdateDTO req){
+        patient.setFirstname(req.getFirstname());
+        patient.setLastname(req.getLastname());
+        patient.setDob(req.getDob());
+        patient.setGender(req.getGender());
+        patient.setPhoneNo(req.getPhoneNo());
+        patient.setEmail(req.getEmail());
+        patient.setActive(req.getActive());
+        return patient;
     }
 }

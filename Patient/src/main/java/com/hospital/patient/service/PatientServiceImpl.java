@@ -5,6 +5,7 @@ import com.hospital.patient.builders.PatientBuilder;
 import com.hospital.patient.dto.PageResponse;
 import com.hospital.patient.dto.PatientCreateDTO;
 import com.hospital.patient.dto.PatientResponseDTO;
+import com.hospital.patient.dto.PatientUpdateDTO;
 import com.hospital.patient.exceptions.PatientIDNotFoundError;
 import com.hospital.patient.models.Address;
 import com.hospital.patient.models.Patients;
@@ -58,7 +59,7 @@ public class PatientServiceImpl implements PatientService{
     public PatientResponseDTO getPatientById(Long Id) throws PatientIDNotFoundError {
         if(Id == null)
             throw new IllegalArgumentException("Patient Id is empyt. Id is mandatory");
-        Patients patientResponse = _repo.findById(Id).orElseThrow(() -> new PatientIDNotFoundError("Patient With Id " + Id + " is not found"));
+        Patients patientResponse = _repo.findByPatientIdAndActiveTrueAndDeletedFalse(Id).orElseThrow(() -> new PatientIDNotFoundError("Patient With Id " + Id + " is not found"));
         return PatientBuilder.createPatientResponseFromPatient(patientResponse);
     }
 
@@ -66,6 +67,7 @@ public class PatientServiceImpl implements PatientService{
     public List<PatientResponseDTO> getAllPatients() {
         List<Patients> patients = _repo.findAll();
         List<PatientResponseDTO> response = patients.stream()
+                .filter(patient->patient.getActive()==true && patient.getDeleted()==false)
                 .map(PatientBuilder::createPatientResponseFromPatient)
                 .toList();
         return response;
@@ -83,6 +85,7 @@ public class PatientServiceImpl implements PatientService{
         Page<Patients> pages = _repo.findAll(page);
         List<PatientResponseDTO> response = pages.getContent()
                 .stream()
+                .filter(patient->patient.getActive()==true && patient.getDeleted()==false)
                 .map(PatientBuilder::createPatientResponseFromPatient)
                 .toList();
         return PageResponse.<PatientResponseDTO>builder()
@@ -96,7 +99,16 @@ public class PatientServiceImpl implements PatientService{
     }
 
     @Override
-    public PatientResponseDTO updatePatient(Long id, PatientCreateDTO req) {
-        return null;
+    public PatientResponseDTO updatePatient(Long id, PatientUpdateDTO req) throws PatientIDNotFoundError {
+        if(id == null)
+            throw new IllegalArgumentException("Patient Id is mandatory");
+        Patients patients = _repo.findByPatientIdAndActiveTrueAndDeletedFalse(id).orElseThrow(() -> new PatientIDNotFoundError("Patient with id: " + id + " was not found"));
+        PatientBuilder.createPatientsFromPatientUpdateDTO(patients,req);
+        if(patients.getAddress() != null && req.getAddressDto() != null){
+            AddressBuilder.createAddressFromAddressUpdateDTO(patients.getAddress(),req.getAddressDto());
+        }
+        Patients save = _repo.save(patients);
+        PatientResponseDTO response = PatientBuilder.createPatientResponseFromPatient(save);
+        return response;
     }
 }
