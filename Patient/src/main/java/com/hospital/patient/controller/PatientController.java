@@ -55,4 +55,19 @@ public class PatientController {
         PatientResponseDTO response = _patientService.updatePatient(Id, req);
         return ResponseEntity.ok(response);
     }
+    @DeleteMapping("{id}")
+    public ResponseEntity<Void> deletePatient(@PathVariable(name = "id") Long Id) throws PatientIDNotFoundError {
+        _patientService.deletePatient(Id);
+        return ResponseEntity.noContent().build();
+    }
+    @GetMapping("/name/{name}")
+    public ResponseEntity<List<PatientResponseDTO>> searchPatientByName(@PathVariable(name = "name") String name){
+        List<PatientResponseDTO> response = _patientService.searchPatientByName(name);
+        return ResponseEntity.ok().body(response);
+    }
+    @PutMapping("/Active/{id}/{Active}")
+    public ResponseEntity<Integer> activeOrDeactivePatient(@PathVariable(name = "id") Long Id,@PathVariable("Active") boolean active) throws PatientIDNotFoundError {
+        int i = _patientService.activeOrDeactivePatient(Id,active);
+        return ResponseEntity.ok(i);
+    }
 }

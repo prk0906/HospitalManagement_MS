@@ -20,4 +20,10 @@ public interface PatientService {
     PageResponse<PatientResponseDTO> getAllPatients(int pageNo, int size,String sortBy,String direction);
 
     PatientResponseDTO updatePatient(Long id, PatientUpdateDTO req) throws PatientIDNotFoundError;
+
+    void deletePatient(Long id) throws PatientIDNotFoundError;
+
+    List<PatientResponseDTO> searchPatientByName(String name);
+
+    int activeOrDeactivePatient(Long id,boolean active) throws PatientIDNotFoundError;
 }

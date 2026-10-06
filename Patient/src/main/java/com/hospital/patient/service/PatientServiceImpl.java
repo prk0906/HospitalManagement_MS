@@ -111,4 +111,34 @@ public class PatientServiceImpl implements PatientService{
         PatientResponseDTO response = PatientBuilder.createPatientResponseFromPatient(save);
         return response;
     }
+
+    @Override
+    public void deletePatient(Long id) throws PatientIDNotFoundError {
+        if(id == null)
+            throw new IllegalArgumentException("Patient Id is mandatory");
+        Patients patient = _repo.findByPatientIdAndActiveTrueAndDeletedFalse(id).orElseThrow(() -> new PatientIDNotFoundError("Patient with id: " + id + " was not found"));
+        patient.setActive(false);
+        patient.setDeleted(false);
+
+        _repo.save(patient);
+    }
+
+    @Override
+    public List<PatientResponseDTO> searchPatientByName(String name) {
+        if(name.isBlank())
+            return null;
+        List<Patients> patients = _repo.searchPatientByName(name);
+        List<PatientResponseDTO> response = patients.stream()
+                .map(PatientBuilder::createPatientResponseFromPatient)
+                .toList();
+
+        return response;
+    }
+
+    @Override
+    public int activeOrDeactivePatient(Long id,boolean active) throws PatientIDNotFoundError {
+        Patients patients = _repo.findById(id).orElseThrow(() -> new PatientIDNotFoundError("Invalid Patient Id."));
+        int updates = _repo.activeOrDeactivePatient(patients.getPatientId(), active);
+        return updates;
+    }
 }
