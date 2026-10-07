@@ -2,6 +2,7 @@ package com.hospital.doctor.builder;
 
 import com.hospital.doctor.dtos.CreateDoctorDTO;
 import com.hospital.doctor.dtos.DoctorResponseDTO;
+import com.hospital.doctor.dtos.DoctorUpdateDTO;
 import com.hospital.doctor.entities.Doctor;
 
 public class DoctorBuilder {
@@ -29,5 +30,19 @@ public class DoctorBuilder {
                 .createdAt(doctor.getCreatedAt())
                 .updatedAt(doctor.getUpdatedAt())
                 .build();
+    }
+
+    public static Doctor updateDoctorFromDoctorUpdateDTO(
+            Doctor doctor,
+            DoctorUpdateDTO request) {
+
+        doctor.setName(request.getName());
+        doctor.setEmail(request.getEmail());
+        doctor.setSpecialization(request.getSpecialization());
+        doctor.setPhone(request.getPhone());
+        doctor.setStatus(request.getStatus());
+        doctor.setActive(request.getActive());
+
+        return doctor;
     }
 }
