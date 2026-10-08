@@ -6,6 +6,7 @@ import com.hospital.doctor.dtos.DoctorResponseDTO;
 import com.hospital.doctor.dtos.DoctorUpdateDTO;
 import com.hospital.doctor.dtos.PageResponse;
 import com.hospital.doctor.entities.Doctor;
+import com.hospital.doctor.entities.enums.DoctorStatus;
 import com.hospital.doctor.exceptions.DoctorIdNotFoundException;
 import com.hospital.doctor.repository.IDoctorRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -119,5 +120,39 @@ public class DoctorService implements IDoctorService{
         Doctor doctor1 = DoctorBuilder.updateDoctorFromDoctorUpdateDTO(doctor, request);
         Doctor save = _repo.save(doctor1);
         return DoctorBuilder.createDoctorResponseFromDoctor(save);
+    }
+
+    @Override
+    public void DeleteDoctorById(Long id) throws DoctorIdNotFoundException {
+        if(id == null) {
+            log.warn("Doctor Id is null");
+            throw new IllegalArgumentException("Patient id cannot be null");
+        }
+        Doctor doctor = _repo.findByDoctorIdAndActiveTrueAndDeletedFalse(id).orElseThrow(() -> new DoctorIdNotFoundException("Doctor with id " + id + " is not found"));
+        doctor.setActive(false);
+        doctor.setDeleted(false);
+        _repo.save(doctor);
+    }
+
+    @Override
+    public List<DoctorResponseDTO> GetDoctorBySpecialization(String specialization) {
+        if(specialization.isBlank() || specialization== null)
+            throw new IllegalArgumentException("Patient id cannot be null");
+        List<Doctor> doctors = _repo.GetDoctorBySpecialization(specialization);
+        List<DoctorResponseDTO> response = doctors.stream()
+                .map(DoctorBuilder::createDoctorResponseFromDoctor)
+                .toList();
+        return response;
+    }
+
+    @Override
+    public List<DoctorResponseDTO> getDoctorByStatus(DoctorStatus status) {
+        if( status == null)
+            throw new IllegalArgumentException("Patient id cannot be null");
+        List<Doctor> doctor = _repo.getDoctorByStatus(status);
+        List<DoctorResponseDTO> response = doctor.stream()
+                .map(DoctorBuilder::createDoctorResponseFromDoctor)
+                .toList();
+        return response;
     }
 }

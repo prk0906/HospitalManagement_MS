@@ -4,6 +4,7 @@ import com.hospital.doctor.dtos.CreateDoctorDTO;
 import com.hospital.doctor.dtos.DoctorResponseDTO;
 import com.hospital.doctor.dtos.DoctorUpdateDTO;
 import com.hospital.doctor.dtos.PageResponse;
+import com.hospital.doctor.entities.enums.DoctorStatus;
 import com.hospital.doctor.exceptions.DoctorIdNotFoundException;
 import com.hospital.doctor.service.IDoctorService;
 import lombok.extern.slf4j.Slf4j;
@@ -65,6 +66,24 @@ public class DoctorController {
     @PutMapping("/{id}")
     public ResponseEntity<DoctorResponseDTO> UpdateDoctor(@PathVariable(name = "id")Long id, @RequestBody DoctorUpdateDTO request) throws DoctorIdNotFoundException {
         DoctorResponseDTO response = _service.UpdateDoctor(id,request);
+        return ResponseEntity.ok(response);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> DeleteDoctorById(@PathVariable(name = "id")Long id) throws DoctorIdNotFoundException {
+        _service.DeleteDoctorById(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/specialization/{specialization}")
+    public ResponseEntity<List<DoctorResponseDTO>> getDoctorBySpecialization(@PathVariable(name = "specialization")String specialization){
+        List<DoctorResponseDTO> response = _service.GetDoctorBySpecialization(specialization);
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/status/{status}")
+    public ResponseEntity<List<DoctorResponseDTO>> getDoctorByStatus(@PathVariable(name = "status") DoctorStatus status){
+        List<DoctorResponseDTO> response = _service.getDoctorByStatus(status);
         return ResponseEntity.ok(response);
     }
 }
