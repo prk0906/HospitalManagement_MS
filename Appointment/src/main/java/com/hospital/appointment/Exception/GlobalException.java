@@ -21,4 +21,10 @@ public class GlobalException {
         ErrorResponse error = new ErrorResponse(HttpStatus.NOT_FOUND.value(),ex.getMessage());
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
     }
+
+    @ExceptionHandler(AppoinmentIdNotFound.class)
+    public ResponseEntity<ErrorResponse> appointmentNotFounr(AppoinmentIdNotFound ex){
+        ErrorResponse error = new ErrorResponse(HttpStatus.NOT_FOUND.value(),ex.getMessage());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
+    }
 }
