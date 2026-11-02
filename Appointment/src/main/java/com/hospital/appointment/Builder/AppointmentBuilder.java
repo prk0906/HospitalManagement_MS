@@ -2,6 +2,7 @@ package com.hospital.appointment.Builder;
 
 import com.hospital.appointment.dtos.AppointmentCreateDTO;
 import com.hospital.appointment.dtos.AppointmentResponseDTO;
+import com.hospital.appointment.dtos.AppointmentUpdateDTO;
 import com.hospital.appointment.entities.Appointment;
 
 public class AppointmentBuilder {
@@ -29,5 +30,20 @@ public class AppointmentBuilder {
                 .active(appointment.getActive())
                 .deleted(appointment.getDeleted())
                 .build();
+    }
+    public static Appointment updateAppointmentFromDTO(
+            Appointment appointment,
+            AppointmentUpdateDTO request) {
+
+        appointment.setPatientId(request.getPatientId());
+        appointment.setDoctorId(request.getDoctorId());
+        appointment.setAppointmentDate(request.getAppointmentDate());
+        appointment.setAppointmentTime(request.getAppointmentTime());
+        appointment.setReason(request.getReason());
+        appointment.setStatus(request.getStatus());
+        appointment.setNotes(request.getNotes());
+        appointment.setActive(request.getActive());
+
+        return appointment;
     }
 }

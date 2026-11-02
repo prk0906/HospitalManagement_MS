@@ -2,6 +2,8 @@ package com.hospital.appointment.AppointmentService;
 
 import com.hospital.appointment.dtos.AppointmentCreateDTO;
 import com.hospital.appointment.dtos.AppointmentResponseDTO;
+import com.hospital.appointment.dtos.AppointmentUpdateDTO;
+import com.hospital.appointment.dtos.PageResponse;
 
 import java.util.List;
 
@@ -10,4 +12,10 @@ public interface IAppointmentService {
     List<AppointmentResponseDTO> createBulkAppointment(List<AppointmentCreateDTO> request);
 
     AppointmentResponseDTO getAppointmentById(Long id);
+
+    List<AppointmentResponseDTO> getAppointments();
+
+    PageResponse<AppointmentResponseDTO>  getAppointmentsByPagination(int pageIndex, int pageSize);
+
+    AppointmentResponseDTO updateAppointment(Long id, AppointmentUpdateDTO request);
 }

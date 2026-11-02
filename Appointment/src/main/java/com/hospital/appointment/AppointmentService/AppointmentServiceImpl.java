@@ -7,13 +7,13 @@ import com.hospital.appointment.Exception.AppoinmentIdNotFound;
 import com.hospital.appointment.Exception.DoctorNotFoundException;
 import com.hospital.appointment.Exception.PatientNotFoundException;
 import com.hospital.appointment.Repository.AppointmentRepo;
-import com.hospital.appointment.dtos.AppointmentCreateDTO;
-import com.hospital.appointment.dtos.AppointmentResponseDTO;
-import com.hospital.appointment.dtos.DoctorResponseDTO;
-import com.hospital.appointment.dtos.PatientResponseDTO;
+import com.hospital.appointment.dtos.*;
 import com.hospital.appointment.entities.Appointment;
 import com.hospital.appointment.entities.AppointmentStatus;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -84,6 +84,48 @@ public class AppointmentServiceImpl implements IAppointmentService{
             throw new IllegalArgumentException("Appointment id is empty");
         Appointment response = _repo.findByAppointmentIdAndActiveTrueAndDeletedFalse(id).orElseThrow(() -> new AppoinmentIdNotFound(String.format("Appointment Id %d is not found", id)));
         return AppointmentBuilder.createAppointmentResponseFromAppointment(response);
+    }
+
+    @Override
+    public List<AppointmentResponseDTO> getAppointments() {
+        List<Appointment> list = _repo.findAll().stream().filter(appo->appo.getActive()==true && appo.getDeleted()==false).toList();
+        if(list == null || list.size()==0)
+            throw new RuntimeException("No Records Found");
+        return list.stream().map(AppointmentBuilder::createAppointmentResponseFromAppointment).toList();
+    }
+
+    @Override
+    public PageResponse<AppointmentResponseDTO> getAppointmentsByPagination(int pageIndex, int pageSize) {
+        Pageable pageRequest = PageRequest.of(pageIndex, pageSize);
+        Page<Appointment> list = _repo.findAll(pageRequest);
+        List<AppointmentResponseDTO> appointmentList = list.getContent().stream()
+                .filter(appo -> appo.getActive() == true && appo.getDeleted() == false)
+                .map(AppointmentBuilder::createAppointmentResponseFromAppointment)
+                .toList();
+        return PageResponse.<AppointmentResponseDTO>builder()
+                .content(appointmentList)
+                .pageNo(list.getNumber())
+                .pageSize(list.getSize())
+                .totalElements(list.getTotalElements())
+                .totalPages(list.getTotalPages())
+                .last(list.isLast())
+                .build();
+    }
+
+    @Override
+    public AppointmentResponseDTO updateAppointment(Long id, AppointmentUpdateDTO request) {
+        if(id==null)
+            throw new IllegalArgumentException(("Id is null"));
+        PatientResponseDTO patient = _patientClient.getPatientById(request.getPatientId());
+        if(patient==null)
+            throw new PatientNotFoundException("Patient with id: "+request.getPatientId()+" is not found");
+        DoctorResponseDTO doctor = _doctorClient.getDoctorById(request.getDoctorId());
+        if(doctor==null)
+            throw new DoctorNotFoundException("Doctor with id:"+request.getDoctorId()+" is not found");
+        Appointment appointment = _repo.findByAppointmentIdAndActiveTrueAndDeletedFalse(id).orElseThrow(() -> new AppoinmentIdNotFound("Appointment Id: " + id + " is not found"));
+        appointment = AppointmentBuilder.updateAppointmentFromDTO(appointment, request);
+        Appointment save = _repo.save(appointment);
+        return AppointmentBuilder.createAppointmentResponseFromAppointment(save);
     }
 
 
