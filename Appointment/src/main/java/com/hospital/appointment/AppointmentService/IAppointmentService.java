@@ -18,4 +18,10 @@ public interface IAppointmentService {
     PageResponse<AppointmentResponseDTO>  getAppointmentsByPagination(int pageIndex, int pageSize);
 
     AppointmentResponseDTO updateAppointment(Long id, AppointmentUpdateDTO request);
+
+    void deleteAppointment(Long id);
+
+    List<AppointmentResponseDTO> getPatientHistory(Long id);
+
+    List<AppointmentResponseDTO> getDoctorAppointments(Long id);
 }

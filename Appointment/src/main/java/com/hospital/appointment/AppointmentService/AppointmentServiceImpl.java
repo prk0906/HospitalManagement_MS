@@ -128,5 +128,41 @@ public class AppointmentServiceImpl implements IAppointmentService{
         return AppointmentBuilder.createAppointmentResponseFromAppointment(save);
     }
 
+    @Override
+    public void deleteAppointment(Long id) {
+        if(id==null)
+            throw new IllegalArgumentException("Appointment with Id:"+id+" is not null");
+        Appointment appointment = _repo.findByAppointmentIdAndActiveTrueAndDeletedFalse(id).orElseThrow(() -> new AppoinmentIdNotFound("Appointment with Id:" + id + " is not found"));
+        appointment.setActive(false);
+        appointment.setDeleted(true);
+        Appointment save = _repo.save(appointment);
+    }
+
+    @Override
+    public List<AppointmentResponseDTO> getPatientHistory(Long id) {
+        if(id==null)
+            throw new IllegalArgumentException("Id is null");
+        PatientResponseDTO patient = _patientClient.getPatientById(id);
+        if(patient==null)
+            throw new PatientNotFoundException("Patient with id:"+id+" is not found");
+        List<Appointment> appointments = _repo.findByPatientId(id).orElseThrow(() -> new IllegalArgumentException("Appointments with patientId:" + id + " are not found"));
+        return appointments.stream()
+                .map(AppointmentBuilder::createAppointmentResponseFromAppointment)
+                .toList();
+    }
+
+    @Override
+    public List<AppointmentResponseDTO> getDoctorAppointments(Long id) {
+        if(id==null)
+            throw new IllegalArgumentException("Id is Null");
+        DoctorResponseDTO doctor = _doctorClient.getDoctorById(id);
+        if(doctor==null)
+            throw new DoctorNotFoundException("Doctor with Id:"+id+" is not found");
+        List<Appointment> appointments = _repo.findByDoctorId(id).orElseThrow(() -> new IllegalArgumentException("Appointments of doctor with id:" + id + " is not found"));
+        return appointments.stream()
+                .map(AppointmentBuilder::createAppointmentResponseFromAppointment)
+                .toList();
+    }
+
 
 }

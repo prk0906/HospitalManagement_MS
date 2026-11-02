@@ -4,8 +4,13 @@ import com.hospital.appointment.dtos.AppointmentResponseDTO;
 import com.hospital.appointment.entities.Appointment;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import java.util.Optional;
+import javax.swing.text.html.Option;
+import java.util.*;
 
 public interface AppointmentRepo extends JpaRepository<Appointment,Long> {
     Optional<Appointment> findByAppointmentIdAndActiveTrueAndDeletedFalse(Long id);
+
+    Optional<List<Appointment>> findByPatientId(Long id);
+
+    Optional<List<Appointment>> findByDoctorId(Long id);
 }

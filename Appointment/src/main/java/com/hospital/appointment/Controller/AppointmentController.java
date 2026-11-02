@@ -5,6 +5,7 @@ import com.hospital.appointment.dtos.AppointmentCreateDTO;
 import com.hospital.appointment.dtos.AppointmentResponseDTO;
 import com.hospital.appointment.dtos.AppointmentUpdateDTO;
 import com.hospital.appointment.dtos.PageResponse;
+import com.hospital.appointment.entities.Appointment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
@@ -49,5 +50,20 @@ public class AppointmentController {
     public ResponseEntity<AppointmentResponseDTO> updateAppointment(@PathVariable(name="id")Long id, @RequestBody AppointmentUpdateDTO request){
         AppointmentResponseDTO responseDTO = _service.updateAppointment(id, request);
         return ResponseEntity.ok(responseDTO);
+    }
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteAppointment(@PathVariable(name = "id")Long id){
+        _service.deleteAppointment(id);
+        return ResponseEntity.noContent().build();
+    }
+    @GetMapping("/patient/{patientId}")
+    public ResponseEntity<List<AppointmentResponseDTO>> getPatientHistory(@PathVariable(name = "patientId") Long id){
+        List<AppointmentResponseDTO> patientHistory = _service.getPatientHistory(id);
+        return ResponseEntity.ok(patientHistory);
+    }
+    @GetMapping("/doctor/{doctorId}")
+    public ResponseEntity<List<AppointmentResponseDTO>> getDoctorAppointments(@PathVariable(name="doctorId")Long id){
+        List<AppointmentResponseDTO> doctorAppointments = _service.getDoctorAppointments(id);
+        return ResponseEntity.ok(doctorAppointments);
     }
 }
