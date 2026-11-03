@@ -5,6 +5,7 @@ import com.hospital.appointment.entities.Appointment;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import javax.swing.text.html.Option;
+import java.time.LocalDate;
 import java.util.*;
 
 public interface AppointmentRepo extends JpaRepository<Appointment,Long> {
@@ -13,4 +14,6 @@ public interface AppointmentRepo extends JpaRepository<Appointment,Long> {
     Optional<List<Appointment>> findByPatientId(Long id);
 
     Optional<List<Appointment>> findByDoctorId(Long id);
+
+    Optional<List<Appointment>> findByAppointmentDateAndDeletedFalse(LocalDate date);
 }

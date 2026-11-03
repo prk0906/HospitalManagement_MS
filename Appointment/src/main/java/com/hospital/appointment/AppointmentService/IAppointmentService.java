@@ -5,6 +5,7 @@ import com.hospital.appointment.dtos.AppointmentResponseDTO;
 import com.hospital.appointment.dtos.AppointmentUpdateDTO;
 import com.hospital.appointment.dtos.PageResponse;
 
+import java.time.LocalDate;
 import java.util.List;
 
 public interface IAppointmentService {
@@ -24,4 +25,10 @@ public interface IAppointmentService {
     List<AppointmentResponseDTO> getPatientHistory(Long id);
 
     List<AppointmentResponseDTO> getDoctorAppointments(Long id);
+
+    List<AppointmentResponseDTO> getAppointmentsByDate(LocalDate date);
+
+    AppointmentResponseDTO updateAppointmentStatusToConfrim(Long id,String status);
+    AppointmentResponseDTO CancelAppointment(Long id);
+    AppointmentResponseDTO CompleteAppointment(Long id);
 }

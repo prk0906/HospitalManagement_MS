@@ -16,6 +16,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -162,6 +163,56 @@ public class AppointmentServiceImpl implements IAppointmentService{
         return appointments.stream()
                 .map(AppointmentBuilder::createAppointmentResponseFromAppointment)
                 .toList();
+    }
+
+    @Override
+    public List<AppointmentResponseDTO> getAppointmentsByDate(LocalDate date) {
+        if(date==null)
+            throw new IllegalArgumentException("Date is null");
+        List<Appointment> appointments = _repo.findByAppointmentDateAndDeletedFalse(date).orElseThrow(() -> new IllegalArgumentException("Appointments with" + date + " is not found"));
+        return appointments.stream()
+                .map(AppointmentBuilder::createAppointmentResponseFromAppointment)
+                .toList();
+    }
+
+    @Override
+    public AppointmentResponseDTO updateAppointmentStatusToConfrim(Long id,String status) {
+        if(id == null)
+            throw new IllegalArgumentException("Id is Null");
+        if(status==null || !status.equalsIgnoreCase("CONFIRMED"))
+            throw new IllegalArgumentException("Only CONFIRMED status is allowed");
+        Appointment appointment = _repo.findByAppointmentIdAndActiveTrueAndDeletedFalse(id).orElseThrow(() -> new AppoinmentIdNotFound("Appointment with " + id + " id is not found"));
+        if(appointment.getStatus() != AppointmentStatus.REQUESTED){
+            throw new IllegalArgumentException("Only Request appointments are CONFIRMED");
+        }
+
+        appointment.setStatus(AppointmentStatus.CONFIRMED);
+        Appointment save = _repo.save(appointment);
+        return AppointmentBuilder.createAppointmentResponseFromAppointment(save);
+    }
+
+    @Override
+    public AppointmentResponseDTO CancelAppointment(Long id) {
+        if(id==null)
+            throw new IllegalArgumentException("Id is Null");
+        Appointment appointment = _repo.findByAppointmentIdAndActiveTrueAndDeletedFalse(id).orElseThrow(() -> new AppoinmentIdNotFound("Appointment with " + id + " id is not found"));
+        if(appointment.getStatus() != AppointmentStatus.REQUESTED && appointment.getStatus() !=AppointmentStatus.CONFIRMED)
+            throw new IllegalArgumentException("Only REQUESTED or CONFIRMED appointments can be cancelled");
+        appointment.setStatus(AppointmentStatus.CANCELLED);
+        Appointment save = _repo.save(appointment);
+        return AppointmentBuilder.createAppointmentResponseFromAppointment(save);
+    }
+
+    @Override
+    public AppointmentResponseDTO CompleteAppointment(Long id) {
+        if(id==null)
+            throw new IllegalArgumentException("Appointment ID is null");
+        Appointment appointment = _repo.findByAppointmentIdAndActiveTrueAndDeletedFalse(id).orElseThrow(() -> new AppoinmentIdNotFound("Appointment ID: " + id + " is not found"));
+        if(appointment.getStatus() != AppointmentStatus.CONFIRMED)
+            throw new IllegalArgumentException("Only CONFIRMED appointments can be marked as COMPLETED");
+        appointment.setStatus(AppointmentStatus.COMPLETED);
+        Appointment save = _repo.save(appointment);
+        return AppointmentBuilder.createAppointmentResponseFromAppointment(save);
     }
 
 

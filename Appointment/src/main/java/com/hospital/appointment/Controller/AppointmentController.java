@@ -7,11 +7,13 @@ import com.hospital.appointment.dtos.AppointmentUpdateDTO;
 import com.hospital.appointment.dtos.PageResponse;
 import com.hospital.appointment.entities.Appointment;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -65,5 +67,25 @@ public class AppointmentController {
     public ResponseEntity<List<AppointmentResponseDTO>> getDoctorAppointments(@PathVariable(name="doctorId")Long id){
         List<AppointmentResponseDTO> doctorAppointments = _service.getDoctorAppointments(id);
         return ResponseEntity.ok(doctorAppointments);
+    }
+    @GetMapping("/date/{date}")
+    public ResponseEntity<List<AppointmentResponseDTO>> getAppointmentsByDate(@PathVariable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)LocalDate date){
+        List<AppointmentResponseDTO> response = _service.getAppointmentsByDate(date);
+        return ResponseEntity.ok(response);
+    }
+    @PutMapping("/{id}/confirm")
+    public ResponseEntity<AppointmentResponseDTO> updateAppointmentStatusToConfrim(@PathVariable(name = "id")Long id,@RequestParam String status){
+        AppointmentResponseDTO response = _service.updateAppointmentStatusToConfrim(id,status);
+        return ResponseEntity.ok(response);
+    }
+    @PutMapping("/{id}/cancel")
+    public ResponseEntity<AppointmentResponseDTO> CancelAppointment(@PathVariable(name = "id")Long id){
+        AppointmentResponseDTO response = _service.CancelAppointment(id);
+        return ResponseEntity.ok(response);
+    }
+    @PutMapping("/{id}/complete")
+    public ResponseEntity<AppointmentResponseDTO> CompleteAppointment(@PathVariable(name = "id")Long id){
+        AppointmentResponseDTO response = _service.CompleteAppointment(id);
+        return ResponseEntity.ok(response);
     }
 }
