@@ -5,7 +5,8 @@ import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
-@FeignClient(name = "Doctor-Service")
+@FeignClient(name = "DOCTOR-SERVICE",
+fallbackFactory = DoctorClientFallbackFactory.class)
 public interface DoctorClient {
     @GetMapping("/doctor/{id}")
     DoctorResponseDTO getDoctorById(@PathVariable("id") Long Id);

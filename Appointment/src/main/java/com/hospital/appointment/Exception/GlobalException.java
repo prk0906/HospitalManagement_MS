@@ -41,4 +41,30 @@ public class GlobalException {
                 .status(HttpStatus.BAD_REQUEST)
                 .body(error);
     }
+    @ExceptionHandler(PatientServiceUnavailableException.class)
+    public ResponseEntity<ErrorResponse> handlePatientServiceUnavailable(
+            PatientServiceUnavailableException ex) {
+
+        ErrorResponse error = new ErrorResponse(
+                HttpStatus.SERVICE_UNAVAILABLE.value(),
+                ex.getMessage()
+        );
+
+        return ResponseEntity
+                .status(HttpStatus.SERVICE_UNAVAILABLE)
+                .body(error);
+    }
+    @ExceptionHandler(DoctorServiceUnavailableException.class)
+    public ResponseEntity<ErrorResponse> handleDoctorServiceUnavailable(
+            DoctorServiceUnavailableException ex) {
+
+        ErrorResponse error = new ErrorResponse(
+                HttpStatus.SERVICE_UNAVAILABLE.value(),
+                ex.getMessage()
+        );
+
+        return ResponseEntity
+                .status(HttpStatus.SERVICE_UNAVAILABLE)
+                .body(error);
+    }
 }
