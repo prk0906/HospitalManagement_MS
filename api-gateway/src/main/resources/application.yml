@@ -1,0 +1,82 @@
+
+server:
+  port: 8080
+
+spring:
+  application:
+    name: API-GATEWAY
+
+  cloud:
+    gateway:
+      server:
+        webflux:
+          routes:
+
+            # Patient Swagger
+            - id: patient-swagger
+              uri: lb://PATIENT-SERVICE
+              predicates:
+                - Path=/patient/v3/api-docs
+              filters:
+                - RewritePath=/patient/(?<segment>.*), /${segment}
+
+            # Doctor Swagger
+            - id: doctor-swagger
+              uri: lb://DOCTOR-SERVICE
+              predicates:
+                - Path=/doctor/v3/api-docs
+              filters:
+                - RewritePath=/doctor/(?<segment>.*), /${segment}
+
+            # Appointment Swagger
+            - id: appointment-swagger
+              uri: lb://APPOINTMENT-SERVICE
+              predicates:
+                - Path=/appointment/v3/api-docs
+              filters:
+                - RewritePath=/appointment/(?<segment>.*), /${segment}
+
+            # Patient API
+            - id: patient-service
+              uri: lb://PATIENT-SERVICE
+              predicates:
+                - Path=/patients/**
+
+            # Doctor API
+            - id: doctor-service
+              uri: lb://DOCTOR-SERVICE
+              predicates:
+                - Path=/doctor/**
+
+            # Appointment API
+            - id: appointment-service
+              uri: lb://APPOINTMENT-SERVICE
+              predicates:
+                - Path=/appointments/**
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+    register-with-eureka: true
+    fetch-registry: true
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+    disable-swagger-default-url: true
+    urls:
+      - name: Patient Service
+        url: /patient/v3/api-docs
+
+      - name: Doctor Service
+        url: /doctor/v3/api-docs
+
+      - name: Appointment Service
+        url: /appointment/v3/api-docs
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,gateway
