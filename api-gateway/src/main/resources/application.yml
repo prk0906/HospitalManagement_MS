@@ -11,7 +11,11 @@ spring:
       server:
         webflux:
           routes:
-
+            # Auth Service API
+            - id: auth-service
+              uri: lb://AUTH-SERVICE
+              predicates:
+                - Path=/auth/**
             # Patient Swagger
             - id: patient-swagger
               uri: lb://PATIENT-SERVICE
@@ -80,3 +84,5 @@ management:
     web:
       exposure:
         include: health,info,gateway
+jwt:
+  secret: ${JWT_SECRET}
