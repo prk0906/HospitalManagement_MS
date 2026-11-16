@@ -1,17 +1,18 @@
 package com.hospital.patient.controller;
 
-import com.hospital.patient.dto.PageResponse;
-import com.hospital.patient.dto.PatientCreateDTO;
-import com.hospital.patient.dto.PatientResponseDTO;
-import com.hospital.patient.dto.PatientUpdateDTO;
+import com.hospital.patient.dto.*;
 import com.hospital.patient.exceptions.PatientIDNotFoundError;
+import com.hospital.patient.service.PatientExcelService;
 import com.hospital.patient.service.PatientService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.*;
 
 @RestController
@@ -19,6 +20,9 @@ import java.util.*;
 public class PatientController {
     @Autowired
     private PatientService _patientService;
+
+    @Autowired
+    private PatientExcelService patientExcelService;
 
     @PostMapping
     public ResponseEntity<PatientResponseDTO> createPatient(
@@ -69,5 +73,17 @@ public class PatientController {
     public ResponseEntity<Integer> activeOrDeactivePatient(@PathVariable(name = "id") Long Id,@PathVariable("Active") boolean active) throws PatientIDNotFoundError {
         int i = _patientService.activeOrDeactivePatient(Id,active);
         return ResponseEntity.ok(i);
+    }
+    @PostMapping(
+            value = "/import",
+            consumes = MediaType.MULTIPART_FORM_DATA_VALUE
+    )
+    public ResponseEntity<ExcelImportResponse> importPatients(
+            @RequestParam("file") MultipartFile file) throws IOException {
+
+        ExcelImportResponse response =
+                patientExcelService.importPatient(file);
+
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 }
